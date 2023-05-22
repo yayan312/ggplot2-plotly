@@ -12,7 +12,6 @@ format:
 Este documento muestra conjunto de visualizaciones de datos elaborados con paquetes de lenguaje R como ggplot2, plotly y DT
 
 # Cargar paquetes
-
 ```{r}
 #| leabel: carga-paquetes
 #| warning: false
@@ -22,12 +21,12 @@ library(tidyverse)
 library(plotly)
 library(DT)
 library(gapminder)
+library(palmerpenguins)
 ```
 
 # Carga de datos
 
 ### MPG
-
 ```{r}
 #| leabel: carga-datos-mpg
 #| warning: false
@@ -44,7 +43,6 @@ mpg |>
 ```
 
 ## Diamonds
-
 ```{r}
 #| leabel: Tabla-datos-diamonds
 #| warning: false
@@ -61,7 +59,6 @@ diamonds |>
 ```
 
 ## Gapminder
-
 ```{r}
 #| leabel: Tabla-gapminder
 #| warning: false
@@ -79,7 +76,6 @@ gapminder |>
 ```
 
 # Datos Covid CR
-
 ```{r}
 #| leabel: carga-datos-covid
 #| warning: false
@@ -132,7 +128,6 @@ covid_general |>
 ```
 
 # Tabla de Delitos
-
 ```{r}
 #| leabel: delitos-2022
 #| warning: false
@@ -153,3 +148,1035 @@ delitos_2022 |>
     )
   )
 ```
+
+# Opciones basicas de ggplot2
+
+## Gráfico de dispersión 
+```{r}
+#| leabel: opciones-grafico
+#| warning: false
+#| code-fold: true 
+
+# Forma basica
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+# Forma con pipe
+mpg |>
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point()
+
+```
+
+## Variacion con color y Shape(formas)
+```{r}
+#| leabel: grafico-dispercion-color
+#| warning: false
+#| code-fold: true 
+# con color
+mpg |>
+  ggplot(aes(x = displ, y = hwy, color = class)) +
+  geom_point()
+
+# Gráfico en shape(formas)
+mpg |>
+  ggplot(aes(x = displ, y = hwy, shape = class)) +
+  geom_point()
+
+```
+
+# Grafico color segun la forma
+```{r}
+#| leabel: grafico-dispercion-color-shape
+#| warning: false
+#| code-fold: true
+
+# Colores segun la forma (color mas shape)
+mpg |>
+  ggplot(aes(x = displ, y = hwy, shape = class, color = class)) +
+  geom_point() +
+  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6)) +
+  scale_color_manual(values = c("red", "blue", "green", "purple", "orange", "brown", "pink"))
+
+```
+
+# Gráfico con puntos
+```{r}
+#| leabel: grafico-dispercion-puntos
+#| warning: false
+#| code-fold: true
+
+# Gráfico de dispersión de rendimiento en autopista vs rendimiento en ciudad con tamaño de puntos correspondiente a la cilindrada
+
+mpg |>
+  ggplot(aes(x = hwy, y = cty, size = displ)) +
+  geom_point()
+```
+
+# Opciones basics de ggplot2
+
+De acuerdo con la gramatica de los graficos. todo grafico estadistico tiene tres componentes:
+
+1. Datos (dataframe)
+2. Mapeos de las columns del dataframe a las propiedades del grafico (x, y, color, tamaño, forma, etc.)
+3. Una o varias capas con geometrias (geom_point, geom_bar, geom_box, etc.)
+
+```{r}
+#| leabel: grafico-básico
+#| warning: false
+#| code-fold: true
+
+mpg |>
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point()
+```
+
+## Cargar el, paquede de datos penguin y genere un gráfico de dspersion que muuestre la relacion: peso vs longitud 
+
+```{r}
+#| leabel: grafico-básico-penguins
+#| warning: false
+#| code-fold: true
+
+penguins |>
+  ggplot(aes(x = body_mass_g, y = flipper_length_mm)) +
+  geom_point()
+         
+```
+
+
+```{r}
+#| leabel: grafico-básico-penguins
+#| warning: false
+#| code-fold: true
+
+mpg |>
+  ggplot(aes(x = displ, y = hwy, color = drv)) +
+  geom_point()
+```
+
+## Cargue el conjunto de datos de penguins y genere un grafico de dispersion que muestre la relacion peso vs longitud 
+
+```{r}
+# Sexo
+
+#| leabel: grafico-básico-penguins_color
+#| warning: false
+#| massage: false
+#| code-fold: true
+
+
+penguins |>
+  ggplot(aes(x = body_mass_g, y = flipper_length_mm, color = sex )) +
+  geom_point()
+```
+
+# Capas adicionales
+```{r}
+#| leabel: grafico-básico-smooth
+#| warning: false
+#| massage: false
+#| code-fold: true
+
+
+mpg |>
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth()
+```
+
+```{r}
+#| leabel: grafico-lineas_colores
+#| warning: false
+#| massage: false
+#| code-fold: true
+
+# Gráfico de dispersión de cilindrada vs millas por galón en autopista
+# coloreado por tipo de tracción
+
+mpg |>
+  ggplot(aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  geom_smooth()
+```
+
+# Paneles(facets)
+```{r}
+#| leabel: paneles (facets-wrap)
+#| warning: false
+#| massage: false
+#| code-fold: true
+
+# Gráfico de dispersión de cilindrada vs millas por galón en autopista mas paneles por tipo de automóvil
+
+mpg |>
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point() +
+  facet_wrap(~ class, nrow = 2)
+```
+
+```{r}
+#| leabel: paneles-2
+#| warning: false
+#| massage: false
+#| code-fold: true
+
+
+# Gráfico de dispersión de cilindrada vs millas por galón en autopista mas paneles por tipo de automóvil y tipo de tracción
+mpg |>
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point() +
+  facet_grid(class ~ drv)
+```
+
+# Paneles pinguinos
+```{r}
+#| leabel: pinguinos-aleta
+#| warning: false
+#| massage: false
+#| code-fold: true
+
+
+penguins |>
+  ggplot(aes(x = body_mass_g, y = flipper_length_mm, color = species)) +
+  geom_point() +
+  facet_grid(~ species)
+
+```
+
+# Paneles gapminder
+```{r}
+gapminder |>
+  ggplot(aes(x = gdpPercap, y = lifeExp, color = continent)) +
+  geom_point() +
+  facet_grid(~ continent)
+```
+
+# Título, etiquetas, estilos y colores
+
+## Títulos, subtítulos y etiquetas
+```{r}
+#| leabel: Títulos-subtitulo-etiqueta
+#| warning: false
+#| massage: false
+#| code-fold: true
+
+# Gráfico de dispersión de cilindrada vs millas por galón en autopista coloreado por tipo de tracción con título, subtítulo y etiquetas
+
+mpg |>
+  ggplot(aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  geom_smooth() +
+  ggtitle("Cilindrada vs rendimiento en autopista por tipo de tracción") +
+  xlab("Cilindrada (l)") +
+  ylab("Rendimiento en autopista (mpg)") +
+  labs(subtitle = "Datos de 38 modelos de automóviles de años entre 1999 y 2008", 
+       caption = "Fuente: United States Environmental Protection Agency (EPA)",
+       color = "Tipo de tracción")
+```
+
+## Estilos
+```{r}
+#| leabel: Estilos
+#| warning: false
+#| massage: false
+#| code-fold: true
+
+# Gráfico de dispersión de cilindrada vs millas por galón en autopista coloreado por tipo de tracción con título, subtítulo, etiquetas y estilo
+
+mpg |>
+  ggplot(aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  geom_smooth() +
+  ggtitle("Cilindrada vs rendimiento en autopista") +
+  xlab("Cilindrada (l)") +
+  ylab("Rendimiento en autopista (mpg)") +
+  labs(subtitle = "Datos de 38 modelos de automóviles de años entre 1999 y 2008", 
+       caption = "Fuente: United States Environmental Protection Agency (EPA)",
+       color = "Tipo de tracción") +
+  theme_bw() # tema de ggplot2
+```
+
+# Paquete de estilos ggthemes y hrbrthemes
+## Cargar paquetes 
+```{r}
+#| leabel: carga-paquetes-2
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Carga de ggthemes
+library(ggthemes)
+# Carga de hbrthemes
+library(hrbrthemes)
+```
+
+```{r}
+#| leabel: Theme
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de dispersión de cilindrada vs millas por galón en autopista coloreado por tipo de tracción con título, subtítulo, etiquetas y estilo de ggthemes
+
+mpg |>
+  ggplot(aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  geom_smooth() +
+  ggtitle("Cilindrada vs rendimiento en autopista") +
+  xlab("Cilindrada (l)") +
+  ylab("Rendimiento en autopista (mpg)") +
+  labs(subtitle = "Datos de 38 modelos de automóviles de años entre 1999 y 2008", 
+       caption = "Fuente: United States Environmental Protection Agency (EPA)",
+       color = "Tipo de tracción") +
+  theme_economist() # estilo de ggthemes
+```
+
+## hrbrthemes
+```{r}
+#| leabel: hrbrthemes
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de dispersión de cilindrada vs millas por galón en autopista coloreado por tipo de tracción con título, subtítulo, etiquetas y estilo de hbrthemes
+
+mpg |>
+  ggplot(aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  geom_smooth() +
+  ggtitle("Cilindrada vs rendimiento en autopista") +
+  xlab("Cilindrada (l)") +
+  ylab("Rendimiento en autopista (mpg)") +
+  labs(subtitle = "Datos de 38 modelos de automóviles de años entre 1999 y 2008", 
+       caption = "Fuente: United States Environmental Protection Agency (EPA)",
+       color = "Tipo de tracción") +
+  theme_ipsum() # tema de hrbrthemes
+```
+
+## Colores 
+```{r}
+#| leabel: colores
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de dispersión de peso vs precio de diamantes coloreado por claridad
+
+diamonds |>
+  ggplot(aes(x = carat, y = price, color = clarity)) +
+  geom_point() +
+  ggtitle("Peso vs precio de diamantes") +
+  xlab("Peso (quilates)") +
+  ylab("Precio ($ EE.UU.)") +
+  labs(color = "Claridad\n(I1=peor IF=mejor)") +
+  scale_colour_brewer(palette = "Purples", direction = 1) +
+  theme_ipsum() # estilo de hrbrthemes
+```
+
+```{r}
+#| leabel: colores-1
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de dispersión de peso vs precio de diamantes coloreado por claridad
+
+diamonds |>
+  ggplot(aes(x = carat, y = price, color = clarity)) +
+  geom_point() +
+  ggtitle("Peso vs precio de diamantes") +
+  xlab("Peso (quilates)") +
+  ylab("Precio ($ EE.UU.)") +
+  labs(color = "Claridad\n(I1=peor IF=mejor)") +
+  scale_color_viridis_d() +
+  theme_ipsum() # estilo de hrbrthemes
+```
+
+# Plotly
+```{r}
+#| leabel: plotly
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico ggplot2
+grafico_ggplot2 <-
+  mpg |>
+  ggplot(aes(x = displ, y = hwy, color = drv)) +
+  geom_point(aes(
+    # datos que se muestran al colocar el ratón sobre un punto
+    text = paste0(
+      "Modelo: ", manufacturer, " ", model, " ", year, "\n",
+      "Cilindrada: ", displ, " l", "\n",
+      "Rendimiento en autopista: ", hwy, " mpg", "\n",
+      "Tipo de tracción: ", drv
+    )
+  )) +
+  geom_smooth() +
+  ggtitle("Cilindrada vs rendimiento en autopista") +
+  xlab("Cilindrada (l)") +
+  ylab("Rendimiento en autopista (mpg)") +
+  labs(subtitle = "Datos de 38 modelos de automóviles de años entre 1999 y 2008",
+       caption = "Fuente: United States Environmental Protection Agency (EPA)",
+       color = "Tipo de tracción") +
+  theme_ipsum()
+
+# Gráfico plotly
+ggplotly(grafico_ggplot2, tooltip = "text") |> 
+  config(locale = 'es') # para mostrar los controles en español
+
+# Gráfico plotly
+ggplotly(grafico_ggplot2, tooltip = "text") |> 
+  config(locale = 'es') # para mostrar los controles en español
+```
+
+# Histogramas
+El histograma representa la distribucion e una variable numerica en forma de barras
+```{r}
+#| leabel: Histograma
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Histograma ggplot2 de distribución del PIB per cápita en 2007
+histograma_ggplot2 <- 
+  gapminder |>
+  filter(year == 2007) |>
+  ggplot(aes(x = gdpPercap)) +
+  geom_histogram(
+    aes(
+      text = paste0(
+        "PIB per cápita (valor medio del rango): $", round(after_stat(x), 2), "\n",
+        "Frecuencia: ", after_stat(count)
+      )
+    ), 
+    bins = 10
+  ) + 
+  ggtitle("Distribución del PIB per cápita en 2007") +
+  xlab("PIB per cápita ($ EE.UU.)") +
+  ylab("Frecuencia") +
+  labs(subtitle = "Datos de 14o países", caption = "Fuente: Gapminder.org") +
+  theme_economist()
+
+# Histograma plotly
+ggplotly(histograma_ggplot2, tooltip = "text") |> 
+  config(locale = 'es')
+```
+
+## Histograma con curva
+```{r}
+#| leabel: Histograma-curva
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Histograma ggplot2 de distribución del PIB per cápita en 2007
+histograma_ggplot2 <-
+  gapminder |>
+  filter(year == 2007) |>
+  ggplot(aes(x = gdpPercap)) +
+  geom_histogram(
+    aes(
+      text = paste0(
+        "PIB per cápita (valor medio del rango): $", round(after_stat(x), 2), "\n",
+        "Frecuencia: ", after_stat(count)
+      ),
+      y = after_stat(density) # argumento necesario para crear la curva KDE
+    ),
+    bins = 10
+  ) +
+  geom_density() +
+  scale_y_continuous(labels = scales::label_comma()) + # para formatear el eje y en notación decimal
+  ggtitle("Distribución del PIB per cápita en 2007") +
+  xlab("PIB per cápita ($ EE.UU.)") +
+  ylab("Densidad") +
+  labs(subtitle = "Datos de 140 países", caption = "Fuente: Gapminder.org") +
+  theme_economist()
+
+# Histograma plotly
+ggplotly(histograma_ggplot2, tooltip = "text") |>
+  config(locale = 'es')
+```
+
+## Histograma con color 
+```{r}
+#| leabel: Histograma-color-(fill)
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Histograma ggplot2 de distribución del PIB per cápita en 2007 por continente
+histograma_ggplot2 <-
+  gapminder |>
+  filter(year == 2007) |>
+  ggplot(aes(x = gdpPercap, fill = continent)) +
+  geom_histogram(
+    aes(
+      text = paste0(
+        "Continente: ", after_stat(fill), "\n",
+        "PIB per cápita (valor medio del rango): $", round(after_stat(x), 2), "\n",
+        "Frecuencia: ", after_stat(count)
+      ),      
+      y = after_stat(density)
+    ),    
+    bins = 10
+  ) +
+  ggtitle("Distribución del PIB per cápita en 2007 por continente") +
+  xlab("PIB per cápita ($ EE.UU.)") +
+  ylab("Densidad") +
+  labs(subtitle = "Datos de 140 países",
+       caption = "Fuente: Gapminder.org",
+       fill = "Continente") +
+  theme_economist()
+
+# Histograma plotly
+ggplotly(histograma_ggplot2, tooltip = "text") |>
+  config(locale = 'es')
+```
+
+## Histograma en paneles
+```{r}
+#| leabel: Histograma-paneles
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Histogramas ggplot2 de distribución del PIB per cápita en 2007 por continente
+histograma_ggplot2 <-
+  gapminder |>
+  filter(year == 2007) |>
+  ggplot(aes(x = gdpPercap)) +
+  geom_histogram(
+    aes(
+      text = paste0(
+        "PIB per cápita (valor medio del rango): $", round(after_stat(x), 2), "\n",
+        "Frecuencia: ", after_stat(count)
+      )
+    ),
+    bins = 10
+  ) +
+  ggtitle("Distribución del PIB per cápita en 2007 por continente") +
+  xlab("PIB per cápita ($ EE.UU.)") +
+  ylab("Frecuencia") +
+  labs(subtitle = "Datos de 140 países",
+       caption = "Fuente: Gapminder.org",
+       fill = "Continente") +
+  facet_wrap(~ continent, nrow = 2) +
+  theme_economist()
+
+# Histograma plotly
+ggplotly(histograma_ggplot2, tooltip = "text") |>
+  config(locale = 'es')
+```
+
+# Gráfico de caja
+```{r}
+#| leabel: Gráfico-caja
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de caja ggplot2 de distribución del PIB per cápita en 2007
+grafico_caja_ggplot2 <-
+gapminder |>
+  filter(year == 2007) |>
+  ggplot(aes(y = gdpPercap)) +
+  geom_boxplot() +
+  ggtitle("Distribución del PIB per cápita en 2007") +
+  ylab("PIB per cápita ($ EE.UU.)") +
+  labs(subtitle = "Datos de 140 países", caption = "Fuente: Gapminder.org") +
+  theme_economist()
+
+# Gráfico de caja plotly
+ggplotly(grafico_caja_ggplot2) |> 
+  config(locale = 'es')
+```
+
+## Gráfico de caja con varias cajas
+```{r}
+#| leabel: Gráfico-cajas
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de caja ggplot2 de distribución del PIB per cápita en 2007 por continente
+grafico_caja_ggplot2 <-
+gapminder |>
+  filter(year == 2007) |>
+  ggplot(aes(x = continent, y = gdpPercap)) +
+  geom_boxplot() +
+  ggtitle("Distribución del PIB per cápita en 2007 por continente") +
+  ylab("PIB per cápita ($ EE.UU.)") +
+  labs(subtitle = "Datos de 140 países", caption = "Fuente: Gapminder.org") +
+  theme_economist()
+
+# Gráfico de caja plotly
+ggplotly(grafico_caja_ggplot2) |> 
+  config(locale = 'es')
+```
+
+# gráficos de Barras
+
+## Con transformación estadística
+```{r}
+#| leabel: Gráfico-transformacion-estadistica
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de barras con conteo de países por continente para el año 2007
+grafico_barras_ggplot2 <-
+gapminder |>
+  filter(year == 2007) |>
+  ggplot(aes(x = continent)) +
+  geom_bar(
+    aes(
+      text = paste0(
+        "Cantidad de países: ", after_stat(count)
+      )
+    ),    
+  ) +
+  ggtitle("Cantidad de países por continente") +
+  xlab("Continente") +
+  ylab("Cantidad de países") +
+  labs(caption = "Fuente: Gapminder.org") +
+  theme_economist()
+
+# Gráfico de barras plotly
+ggplotly(grafico_barras_ggplot2, tooltip = "text") |> 
+  config(locale = 'es')
+
+```
+
+## Grafico de barras acomodado por continentes*
+Para ordenar las barras de acuerdo con el conteo, puede utilizarse la función fct_infreq() del paquete forcats de Tidyerse.Si se prefiere el orden inverso, puede utilizarse la función fct_rev() (ej. fct_rev(fct_infreq(continent))).
+
+```{r}
+#| leabel: Gráfico-barra-acomodadas
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de barras con conteo de países por continente para el año 2007
+grafico_barras_ggplot2 <-
+gapminder |>
+  filter(year == 2007) |>
+  ggplot(aes(x = fct_infreq(continent))) +
+  geom_bar(
+    aes(
+      text = paste0(
+        "Cantidad de países: ", after_stat(count)
+      )
+    )    
+  ) +
+  ggtitle("Cantidad de países por continente") +
+  xlab("Continente") +
+  ylab("Cantidad de países") +
+  labs(caption = "Fuente: Gapminder.org") +
+  theme_economist()
+
+# Gráfico de barras plotly
+ggplotly(grafico_barras_ggplot2, tooltip = "text") |> 
+  config(locale = 'es')
+```
+
+## Grafico damiantes acomodados
+```{r}
+#| leabel: Gráfico-barra-acomodadas-2
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de barras con conteo de diamantes por corte
+grafico_barras_ggplot2 <-
+diamonds |>
+  ggplot(aes(x = fct_rev(cut))) +
+  geom_bar(
+    aes(
+      text = paste0(
+        "Cantidad de diamantes: ", after_stat(count)
+      )
+    )
+  ) +
+  ggtitle("Cantidad de diamantes por corte") +
+  xlab("Corte") +
+  ylab("Cantidad de diamantes") +
+  theme_economist()
+
+# Gráfico de barras plotly
+ggplotly(grafico_barras_ggplot2, tooltip = "text") |> 
+  config(locale = 'es')
+```
+
+
+## Otras transformaciones
+Las barras pueden mostrar otras transformaciones estadísticas a través del uso de los argumentos stat y fun.y de geom_bar(). Por ejemplo, stat = "summary" y fun.y = "mean"generan un gráfico que muestra el promedio de esperanza de vida (lifeExp) para cada continente para el año 2007.
+
+```{r}
+#| leabel: Gráfico-barra-acomodadas-2
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de barras con promedio de esperanza de vida para cada continente para el año 2007
+grafico_barras_ggplot2 <-
+  gapminder |>
+  filter(year == 2007) |>
+  ggplot(aes(x = fct_infreq(continent), y = lifeExp)) +
+  geom_bar(
+    stat = "summary", 
+    fun.y = "mean",
+    aes(
+      text = paste0(
+        "Promedio de esperanza de vida: ", round(after_stat(y), 2)
+      )
+    )
+  ) +
+  ggtitle("Promedio de esperanza de vida por continente en 2007") +
+  xlab("Continente") +
+  ylab("Promedio de esperanza de vida") +
+  labs(caption = "Fuente: Gapminder.org") +
+  theme_economist()
+
+# Gráfico de barras plotly
+ggplotly(grafico_barras_ggplot2, tooltip = "text") |>
+  config(locale = 'es')
+
+
+```
+
+# Graficos de Barras 
+Un gráfico de barras se compone de barras rectangulares con longitud proporcional a estadísticas (ej. frecuencias, promedios, mínimos, máximos) asociadas a una variable categórica o discreta. Las barras pueden ser horizontales o verticales y se recomienda que estén ordenadas según su longitud, a menos que exista un orden inherente a la variable (ej. el orden de los días de la semana). Es uno de los tipos de gráficos estadísticos más antiguos y comunes y tiene la ventaja de ser muy fácil de comprender.
+
+# Calculo por promedio 
+```{r}
+#| leabel: calculo-por-promedio
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Cálculo del promedio de esperanza de vida por continente
+gapminder_mean_lifeExp_continent <-
+  gapminder |>
+  filter(year == 2007) |>
+  group_by(continent) |>
+  summarize(lifeExp_mean = mean(lifeExp))
+
+# Despliegue por orden descendente del promedio de esperanza de vida
+gapminder_mean_lifeExp_continent |>
+  arrange(desc(lifeExp_mean))
+```
+
+## Grafico de clculo por promedio
+```{r}
+#| leabel: grafico-calculo-por-promedio
+#| warning: false
+#| code-fold: true
+#| message: false
+# Gráfico de barras con promedio de esperanza de vida
+# para cada continente para el año 2007
+grafico_barras_ggplot2 <-
+  gapminder_mean_lifeExp_continent |>
+  ggplot(aes(x = reorder(continent,-lifeExp_mean), y = lifeExp_mean)) +
+  geom_col(
+    aes(
+      text = paste0(
+        "Promedio de esperanza de vida: ", round(after_stat(y), 2)
+      )
+    )    
+  ) +
+  ggtitle("Promedio de esperanza de vida por continente en 2007") +
+  xlab("Continente") +
+  ylab("Promedio de esperanza de vida") +
+  labs(caption = "Fuente: Gapminder.org") +
+  theme_economist()
+
+# Gráfico de barras plotly
+ggplotly(grafico_barras_ggplot2, tooltip = "text") |>
+  config(locale = 'es')
+```
+
+# Barras sin transformaciones estadísticas
+```{r}
+#| leabel: barras-sin-transformar
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de barras con población de países de América para el año 2007
+grafico_barras_ggplot2 <-
+gapminder |>
+  filter(year == 2007 & continent == "Americas") |>
+  ggplot(aes(x = reorder(country, pop), y = pop/1000000)) +
+  geom_col(
+    aes(
+      text = paste0(
+        "País: ", country, "\n",
+        "Población (millones de habitantes): ", round(pop/1000000, 2)
+      )
+    )
+  ) +
+  coord_flip() + # para mostrar barras horizontales
+  ggtitle("Población de países de América en 2007") +
+  xlab("País") +
+  ylab("Población (millones de habitantes)") +
+  labs(caption = "Fuente: Gapminder.org") +
+  theme_economist()
+
+# Gráfico de barras plotly
+ggplotly(grafico_barras_ggplot2, tooltip = "text") |> 
+  config(locale = 'es')
+```
+
+# Barras apiladas
+```{r}
+#| leabel: barras-apiladas
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de barras apiladas por tipo de corte y claridad 
+grafico_barras_ggplot2 <-
+diamonds |>
+  ggplot(aes(x = cut, fill = clarity)) +
+  geom_bar() +
+  ggtitle("Cantidad de diamantes por corte y claridad") +
+  xlab("Corte") +
+  ylab("Cantidad de diamantes") +
+  labs(fill = "Claridad") +
+  theme_minimal()
+
+# Gráfico de barras plotly
+ggplotly(grafico_barras_ggplot2) |> 
+  config(locale = 'es')
+```
+
+El argumento position = "fill" de geom_bar() también genera barras apiladas, pero le asigna a todas las barras la misma longitud, facilitando así la comparación de proporciones.
+
+```{r}
+#| leabel: barras-apiladas-mismo-tamño
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de barras apiladas por tipo de corte y claridad 
+grafico_barras_ggplot2 <-
+diamonds |>
+  ggplot(aes(x = cut, fill = clarity)) +
+  geom_bar(position = "fill") +
+  ggtitle("Proporción de tipos de claridad en cortes de diamantes") +
+  xlab("Corte") +
+  ylab("Proporción") +
+  labs(fill = "Claridad") +
+  theme_minimal()
+
+# Gráfico de barras plotly
+ggplotly(grafico_barras_ggplot2) |> 
+  config(locale = 'es')
+```
+
+# Barras Agrupadas
+```{r}
+#| leabel: barras-agrupadas
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de barras agrupadas por tipo de corte y claridad 
+
+grafico_barras_ggplot2 <-
+diamonds |>
+  ggplot(aes(x = cut, fill = clarity)) +
+  geom_bar(position = "dodge") +
+  ggtitle("Cantidad de diamantes por corte y claridad") +
+  xlab("Corte") +
+  ylab("Cantidad de diamantes") +
+  labs(fill = "Claridad") +
+  theme_minimal()
+
+# Gráfico de barras plotly
+ggplotly(grafico_barras_ggplot2) |> 
+  config(locale = 'es'
+  )
+```
+
+# Grafico de Dispercion
+En ggplot2, los gráficos de dispersión se implementan con la función de geometría geom_point().
+```{r}
+#| leabel: Grfico-dispercion
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de dispersión PIB per cápita vs esperanza de vida en 2007
+# + línea de tendencia
+grafico_dispersion_ggplot2 <-
+  gapminder |>
+  filter(year == 2007) |>
+  ggplot(aes(x = gdpPercap, y = lifeExp)) +
+  geom_point(aes(
+    text = paste0(
+      "País: ", country, "\n",
+      "PIB per cápita: $", round(gdpPercap, 2), "\n",
+      "Esperanza de vida: ", round(lifeExp, 2), " años"
+    )
+  )) +
+  geom_smooth(method = "lm") +
+  ggtitle("PIB per cápita vs esperanza de vida en 2007") +
+  xlab("PIB per cápita ($ EE.UU.)") +
+  ylab("Esperanza de vida (años)") +
+  labs(caption = "Fuente: Gapminder.org") +
+  theme_economist()  
+
+# Gráfico de dispersión plotly
+ggplotly(grafico_dispersion_ggplot2, tooltip = "text") |>
+  config(locale = 'es')
+```
+
+## Grafico de dispercion con color
+```{r}
+#| leabel: Grfico-dispercion-color
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de dispersión PIB per cápita vs esperanza de vida por continente en 2007
+grafico_dispersion_ggplot2 <-
+  gapminder |>
+  filter(year == 2007) |>
+  ggplot(aes(x = gdpPercap, y = lifeExp, color = continent)) +
+  geom_point(aes(
+    text = paste0(
+      "País: ", country, "\n",
+      "Continente: ", continent, "\n",
+      "PIB per cápita: $", round(gdpPercap, 2), "\n",
+      "Esperanza de vida: ", round(lifeExp, 2), " años"      
+    )
+  )) +
+  ggtitle("PIB per cápita vs esperanza de vida por continente en 2007") +
+  xlab("PIB per cápita ($ EE.UU.)") +
+  ylab("Esperanza de vida (años)") +
+  labs(caption = "Fuente: Gapminder.org", color = "Continente") +
+  theme_economist()  
+
+# Gráfico de dispersión plotly
+ggplotly(grafico_dispersion_ggplot2, tooltip = "text") |>
+  config(locale = 'es')
+```
+
+# Gráfico de lineas
+En ggplot2, los gráficos de líneas se implementan con la función de geometría geom_line().
+```{r}
+#| leabel: Grfico-lineas
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de líneas con la evolución de los casos de COVID
+
+grafico_lineas_ggplot2 <-
+  covid_general |>
+  ggplot(aes(x = fecha, y = value, color = variable)) +
+  geom_line(aes(y = positivos, color = "Positivos")) +
+  geom_line(aes(y = recuperados, color = "Recuperados")) +
+  geom_line(aes(y = activos, color = "Activos")) +
+  geom_line(aes(y = fallecidos, color = "Fallecidos")) +
+  scale_color_manual( # colores
+    "",
+    values = c(
+      "Positivos" = "green",
+      "Recuperados" = "blue",
+      "Activos" = "purple",
+      "Fallecidos" = "black"
+    )
+  ) +
+  ggtitle("Casos acumulados de COVID en Costa Rica al 2022-05-30") +
+  xlab("Fecha") +
+  ylab("Casos") +
+  theme_economist()  
+
+# Gráfico de dispersión plotly
+ggplotly(grafico_lineas_ggplot2) |>
+  config(locale = 'es')
+```
+
+# Gráfico de lineas de evolucion del tiempo de casos de covid hospitlizados en salon y UCI
+
+```{r}
+#| leabel: Grfico-lineas-covid
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Gráfico de líneas con la evolución de los casos de COVID
+
+grafico_lineas_ggplot2 <-
+  covid_general |>
+  ggplot(aes(x = fecha, y = value, color = variable)) +
+  geom_line(aes(y = salon, color = "Salon")) +
+  geom_line(aes(y = uci, color = "Uci")) +
+  scale_color_manual( # colores
+    "",
+    values = c(
+      "Salon" = "blue",
+      "Uci" = "purple"
+    )
+  ) +
+  ggtitle("Casos acumulados de COVID en Costa Rica en uci") +
+  xlab("Fecha") +
+  ylab("Casos") +
+  theme_economist()  
+
+# Gráfico de dispersión plotly
+ggplotly(grafico_lineas_ggplot2) |>
+  config(locale = 'es')
+```
+
+
+# Grafico de Pastel
+Representa porcentajes y porciones en secciones (slices) de un círculo. Son muy populares, pero también criticados debido a la dificultad del cerebro humano de comparar áreas de sectores circulares, por lo que algunos expertos recomiendan sustituirlos por otros tipos de gráficos como, por ejemplo, gráficos de barras.
+
+En ggplot2, los gráficos de pastel se implementan con la función de geometría geom_bar(stat = "identity", width = 1) y la función coord_polar(), la cual implementa un sistema de coordenadas polares.
+```{r}
+#| leabel: Grfico-pastel
+#| warning: false
+#| code-fold: true
+#| message: false
+
+# Crear tabla de frecuencias
+tabla_frecuencias_delitos_2022_provincias <- table(delitos_2022$Provincia)
+
+# Convertir la tabla en un data frame
+delitos_2022_provincias <- as.data.frame(tabla_frecuencias_delitos_2022_provincias)
+
+# Cambiar nombres de columnas del data frame
+delitos_2022_provincias <-
+  delitos_2022_provincias |>
+  rename(Provincia = Var1, Frecuencia = Freq)
+
+# Calcular porcentajes por provincia
+delitos_2022_provincias$Porcentaje <-
+  100 * delitos_2022_provincias$Frecuencia / sum(delitos_2022_provincias$Frecuencia)
+
+# Crear gráfico de pastel utilizando ggplot2
+grafico_pastel_ggplot2 <-
+  delitos_2022_provincias |>
+  ggplot(aes(x = "", y = Porcentaje, fill = Provincia)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  labs(title = "Porcentaje de delitos cometidos en 2022 por provincia",
+    subtitle = "Fuente: OIJ") +
+  scale_fill_discrete(name = "Provincia") +
+  geom_text(
+    aes(label = paste0(round(Porcentaje, 1), "%")),
+    position = position_stack(vjust = 0.5),
+    color = "white",
+    size = 4
+  ) 
+
+# Despliegue del gráfico
+grafico_pastel_ggplot2
+```
+
